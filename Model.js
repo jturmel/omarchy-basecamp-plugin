@@ -256,6 +256,13 @@ function notificationBadgeText(item, hovered) {
   return String(Math.max(1, (item && item.unreadCount) || 0))
 }
 
+function activateNotification(service, item, dismissing, closePanel) {
+  if (!item || dismissing === true) return false
+  service.openNotification(item)
+  closePanel()
+  return true
+}
+
 function cleanText(value) {
   return String(value || "")
     .replace(/\\[nrt]/g, " ")
@@ -325,6 +332,7 @@ if (typeof module !== "undefined") {
     accountFilterOptions: accountFilterOptions,
     notificationTypeIcon: notificationTypeIcon,
     notificationBadgeText: notificationBadgeText,
+    activateNotification: activateNotification,
     cleanText: cleanText,
     notificationTime: notificationTime,
     notificationMeta: notificationMeta

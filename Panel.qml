@@ -98,6 +98,7 @@ Panel {
   // Guard on needsSetup: the setup-state retry timer probes every few
   // seconds, and each probe would otherwise flash a loading phrase.
   readonly property bool rotatingPhrases: service.refreshing && !needsSetup
+  property bool suppressBarToggle: false
 
   readonly property string heroStatusText: {
     if (service.actionStatus !== "") return service.actionStatus
@@ -202,9 +203,18 @@ Panel {
     select(selectedIndex + delta)
   }
 
+  function activateNotification(item, dismissing) {
+    if (!item || dismissing === true) return
+    root.suppressBarToggle = true
+    suppressBarToggleTimer.restart()
+    Model.activateNotification(service, item, false, function() {
+      Qt.callLater(function() { root.close() })
+    })
+  }
+
   function activateSelection() {
     if (!cursorActive || filteredNotifications.length === 0) return
-    service.openNotification(filteredNotifications[selectedIndex])
+    activateNotification(filteredNotifications[selectedIndex])
   }
 
   function scrollSelectionIntoView() {
@@ -241,6 +251,13 @@ Panel {
   PointerMoveGate {
     id: pointerGate
     referenceItem: panelFlick
+  }
+
+  Timer {
+    id: suppressBarToggleTimer
+    interval: 400
+    repeat: false
+    onTriggered: root.suppressBarToggle = false
   }
 
   // Auto-retry while a setup state is showing: each tick is one local
@@ -348,6 +365,7 @@ Panel {
       : (service.unreadCount === 1 ? "1 unread Basecamp notification" : service.unreadCount + " unread Basecamp notifications")
     onPressed: function(buttonCode) {
       if (buttonCode === Qt.RightButton || buttonCode === Qt.MiddleButton) service.refresh()
+      else if (root.suppressBarToggle) root.suppressBarToggle = false
       else root.toggle()
     }
   }
@@ -643,7 +661,8 @@ Panel {
                   onPositionChanged: function(mouse) {
                     if (pointerGate.moved(notificationRow, mouse)) root.select(notificationRow.index)
                   }
-                  onClicked: service.openNotification(notificationRow.modelData)
+                  onClicked: root.activateNotification(
+                    notificationRow.modelData, dismissMouse.containsMouse)
                 }
 
                 PanelToolTip {

@@ -136,6 +136,30 @@ test("notificationBadgeText shows the unread count until hovered, then a dismiss
   assert.equal(dismiss, Model.notificationBadgeText({}, true))
 })
 
+test("activateNotification opens the notification before requesting panel close", () => {
+  const events = []
+  const item = notification()
+  const service = {
+    openNotification(actualItem) {
+      assert.equal(actualItem, item)
+      events.push("open")
+    }
+  }
+
+  Model.activateNotification(service, item, false, () => events.push("close"))
+
+  assert.deepEqual(events, ["open", "close"])
+})
+
+test("activateNotification ignores clicks on the dismiss control", () => {
+  const events = []
+  const service = { openNotification() { events.push("open") } }
+
+  Model.activateNotification(service, notification(), true, () => events.push("close"))
+
+  assert.deepEqual(events, [])
+})
+
 test("invalid CLI output returns a useful parse failure", () => {
   assert.deepEqual(Model.parseAccounts("not json"), {
     ok: false,

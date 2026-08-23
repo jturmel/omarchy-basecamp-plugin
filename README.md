@@ -63,8 +63,8 @@ If the plugin ID is already installed, remove the existing copy first or use a s
 - Right-click or middle-click the logo to refresh.
 - Select an account to filter the combined feed.
 - Select `Unread` or `Previous notifications` below the Basecamp title.
-- Click a notification to open it. Unread notifications are also marked as read.
-- Hover the unread count on a notification to reveal a dismiss control. Click it to mark the item as read without opening it.
+- Click a notification to open it and close the panel. Unread notifications are also marked as read.
+- Hover the unread count on a notification to reveal a dismiss control. Click it to mark the item as read without opening it or closing the panel.
 - Use the up and down arrow keys to move through notifications.
 - Use the left and right arrow keys to move through account filters.
 - Press `U` for unread notifications, `P` for previous notifications, or `R` to refresh.
